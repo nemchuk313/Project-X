@@ -1,59 +1,81 @@
-using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine;
 
 public class PickupObject : MonoBehaviour
 {
-    public Transform player;
-    public Transform hand;
-    public float pickupDistance = 2f;
+    private bool isHolding = false;
+    private Transform player;
+    private Vector3 objectPosition;
+    private Quaternion objectRotation;
+    private Transform hand;
 
-    bool carrying;
-    GameObject carriedObject;
-
-    void Update()
+    public void SetPlayer(Transform playerTransform,Transform playerHandTransform)
     {
-        if (carrying)
+        player = playerTransform;
+        hand = playerHandTransform;
+    }
+
+    private void Start()
+    {
+        
+    }
+
+    private void Update()
+    {
+        if (isHolding)
         {
-            if (Keyboard.current.eKey.wasPressedThisFrame)
-            {
-                DropObject();
-            }
+            // ???????????????? ???????? ? ???? ?????????
+            transform.position = hand.position;
+
+            // ??????? ???????? ?????? ? ????? ?????????
+            transform.rotation = hand.rotation;
+            
         }
-        else
+
+        if (Input.GetKeyDown(KeyCode.E))
         {
-            if (Keyboard.current.eKey.wasPressedThisFrame)
+            if (!isHolding)
             {
-                CheckForPickup();
+                // ??????? ???????
+                PickUp();
+            }
+            else
+            {
+                // ????????? ???????
+                Drop();
             }
         }
     }
 
-    void CheckForPickup()
+    private void PickUp()
     {
-        RaycastHit hit;
-        if (Physics.Raycast(player.position, player.forward, out hit, pickupDistance))
-        {
-            if (hit.collider.gameObject == gameObject)
-            {
-                PickUpObject();
-            }
-        }
+        isHolding = true;
+        objectPosition = transform.position;
+        objectRotation = hand.rotation;
+
+        // ?????????? ?????? ????????
+        GetComponent<Rigidbody>().isKinematic = true;
+
+        
+
+        // ???????? ???????? ? ???? ?????????
+        transform.parent = hand;
+
     }
 
-    void PickUpObject()
+    private void Drop()
     {
-        carrying = true;
-        carriedObject = gameObject;
-        gameObject.GetComponent<Rigidbody>().isKinematic = true;
-        gameObject.transform.position = hand.position;
-        gameObject.transform.parent = hand;
-    }
+        isHolding = false;
 
-    void DropObject()
-    {
-        carrying = false;
-        carriedObject = null;
-        gameObject.GetComponent<Rigidbody>().isKinematic = false;
-        gameObject.transform.parent = null;
+        // ????????? ?????? ????????
+        GetComponent<Rigidbody>().isKinematic = false;
+
+      
+        // ??????????? ???????? ?? ???? ?????????
+        transform.parent = null;
+
+        // ?????????????? ??????? ? ??????? ????????
+        transform.position = objectPosition;
+        transform.rotation = objectRotation;
     }
 }
