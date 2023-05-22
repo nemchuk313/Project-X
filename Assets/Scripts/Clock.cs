@@ -15,9 +15,27 @@ public class Clock : MonoBehaviour
     private TextMeshProUGUI _timeText;
 
     private bool _isDay = true;
+    public bool IsDay
+    {
+        get { return _isDay; }
+    }
+
     private float _currentTime = 6f * 3600f; // Start time 6a.m.
     private float _timeMultiplier;
 
+    public static Clock Instance { get; private set; }
+
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     private void Start()
     {
         _timeMultiplier = 24f * 3600f / _dayDuration; // calculate time multiplier
