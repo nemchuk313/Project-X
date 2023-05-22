@@ -7,19 +7,20 @@ using TMPro;
 public class Clock : MonoBehaviour
 {
     [Header("TIME")]
-    [SerializeField]
-    private float dayDuration; // day time duration in seconds (06:00 - 00:00)
 
     [SerializeField]
-    private TextMeshProUGUI timeText;
+    private float _dayDuration; // day time duration in seconds (06:00 - 00:00)
 
-    private bool isDay = true;
-    private float currentTime = 6f * 3600f; // Start time 6a.m.
-    private float timeMultiplier;
+    [SerializeField]
+    private TextMeshProUGUI _timeText;
+
+    private bool _isDay = true;
+    private float _currentTime = 6f * 3600f; // Start time 6a.m.
+    private float _timeMultiplier;
 
     private void Start()
     {
-        timeMultiplier = 24f * 3600f / dayDuration; // calculate time multiplier
+        _timeMultiplier = 24f * 3600f / _dayDuration; // calculate time multiplier
     }
 
     private void Update()
@@ -30,20 +31,20 @@ public class Clock : MonoBehaviour
 
     private void UpdateTime()
     {
-        float timeIncrement = Time.deltaTime * timeMultiplier;
-        currentTime += timeIncrement;
+        float timeIncrement = Time.deltaTime * _timeMultiplier;
+        _currentTime += timeIncrement;
 
-        if (currentTime >= 24f * 3600f) 
+        if (_currentTime >= 24f * 3600f) 
         {
-            currentTime -= 24f * 3600f;
+            _currentTime -= 24f * 3600f;
         }
 
         
-        if (!isDay && currentTime >= 6f * 3600f - timeIncrement && currentTime < 6f * 3600f)
+        if (!_isDay && _currentTime >= 6f * 3600f - timeIncrement && _currentTime < 6f * 3600f)
         {
             SwitchToDay();
         }
-        else if (isDay && currentTime >= 24f * 3600f - timeIncrement)
+        else if (_isDay && _currentTime >= 24f * 3600f - timeIncrement)
         {
             SwitchToNight();
         }
@@ -51,22 +52,21 @@ public class Clock : MonoBehaviour
 
     private void UpdateTimeText()
     {
-        int hours = Mathf.FloorToInt(currentTime / 3600f);
-        int minutes = Mathf.FloorToInt((currentTime % 3600f) / 60f);
-        int seconds = Mathf.FloorToInt(currentTime % 60f);
+        int hours = Mathf.FloorToInt(_currentTime / 3600f);
+        int minutes = Mathf.FloorToInt((_currentTime % 3600f) / 60f);
 
         string timeString = string.Format("{0:00}:{1:00}", hours, minutes);
 
-        timeText.text = "Time: " + timeString;
+        _timeText.text = "Time: " + timeString;
     }
 
     private void SwitchToDay()
     {
-        isDay = true;
+        _isDay = true;
     }
 
     private void SwitchToNight()
     {
-        isDay = false;
+        _isDay = false;
     }
 }
